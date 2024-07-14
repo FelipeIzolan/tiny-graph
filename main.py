@@ -11,7 +11,7 @@ def invert_axis(axis: Literal['x', 'y']):
     return 'x' if axis == 'y' else 'y'
 
 def index(v: int):
-    return 112 + v * 10
+    return int(112 + v * 10)
 
 def draw_point(x: int, y: int, color = [255,74,121,255]):
     canvas[y][x] = color
@@ -32,8 +32,6 @@ def draw_line(x1: int, x2: int, y1: int, y2: int):
 
     if y1 - y2 >= 0:
         yinc *= -1
-
-#     print(y1-y2)
   
     x = x1
     y = y1
@@ -68,7 +66,7 @@ def linear_equation(axis: Literal['x', 'y'], equation: str, _start, _end):
                 draw_line(start, curr, _start, num)
 
 
-# linear_equation('y', 'x + 2', -3, 3)
+# linear_equation('y', '(x + 8) / 2', -3, 3)
 # linear_equation('y', '-3 * x', -2, 2)
 
 out = Image.fromarray(canvas)
