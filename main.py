@@ -1,73 +1,68 @@
-from typing import Literal
-from PIL import Image
-import numpy as np
+from utils import PROMPT, I2N, format
+from canvas import Canvas
 
-base = np.asarray(Image.open("./base.png"))
+print('''
+ __   __                                           __    
+|  |_|__.-----.--.--.______.-----.----.---.-.-----|  |--.
+|   _|  |     |  |  |______|  _  |   _|  _  |  _  |     |
+|____|__|__|__|___  |      |___  |__| |___._|   __|__|__|
+              |_____|      |_____|          |__|
+''')
 
-canvas = base.copy()
-canvas.setflags(write=True)
+index = int(input(f'{PROMPT}'))
+if index <= 0 or index >= 4:
+    raise Exception("Index out of range")
 
-def invert_axis(axis: Literal['x', 'y']):
-    return 'x' if axis == 'y' else 'y'
+def main(canvas = None):
+    expr = format(input(f'Enter the {I2N[index - 1]}: '), index)
 
-def index(v: int):
-    return int(112 + v * 10)
-
-def draw_point(x: int, y: int, color = [255,74,121,255]):
-    canvas[y][x] = color
-    for n in range (-1, 2):
-        canvas[y+n][x] = color 
-        canvas[y][x+n] = color
-
-def draw_line(x1: int, x2: int, y1: int, y2: int):    
-    x1, x2 = index(x1), index(x2)
-    y1, y2 = index(-y1), index(-y2)
-
-    dx = abs(x1 - x2) 
-    dy = abs(y1 - y2) 
-    steps = max(dx, dy)
-  
-    xinc = dx/steps
-    yinc = dy/steps
-
-    if y1 - y2 >= 0:
-        yinc *= -1
-  
-    x = x1
-    y = y1
-    
-    for _ in range(steps):
-        ix, iy = int(x), int(y)
-        if not all(canvas[iy][ix]):
-            canvas[iy][ix] =[74,168,255,255]
-
-        x = x + xinc
-        y = y + yinc
-
-def linear_equation(axis: Literal['x', 'y'], equation: str, _start, _end):
-    iaxis = invert_axis(axis)
-
-    for num in range(_start, _end):
-        curr = eval(equation.replace(iaxis, str(num)))
+    match index:
+        case 1:
+            if (expr[0] != 'x' and expr[0] != 'y') or\
+               (expr[1] != '>' and expr[1] != '<'):
+                raise Exception("\033[0;31mInequality - Invalid Expression.\033[0m")
+         
+            inequality = expr[1] + ('=' if expr[2] == '=' else '')
+            inequality_len = len(inequality)
+            start = int(expr[1 + inequality_len:]) 
         
-        if iaxis == 'x':
-            draw_point(index(num), index(-curr))
+            canvas = Canvas('line')
+        
+            canvas.line(start, 11 if inequality[0] == '>' else -11, 0, 0, True, Canvas.RED)
+            canvas.pointq(start, 0)
+            canvas.pointr(1 if inequality[0] == '<' else 223, 2)
+            canvas.pointro(2 if inequality[0] == '<' else 222, 0)
+            canvas.pointro(2 if inequality[0] == '<' else 222, 4)
 
-        if iaxis == 'y': 
-            draw_point(index(curr), index(-num))
+            if inequality_len == 1:
+                canvas.pointro(canvas.offsetX(start), canvas.offsetY(), Canvas.BLACK)
 
-        if num == _end - 1:
-            start = eval(equation.replace(iaxis, str(_start)))
+            canvas.save()
+
+        case 2:
+            print('Under Development')
+
+        case 3:
+            if expr[0] != 'y' or expr[1] != '=':
+                raise Exception("\033[0;31mLinear Equation - Invalid Expression.\033[0m")
+
+            canvas = canvas if canvas else Canvas('graph')
+            equation = expr[2:]
+
+            for x in range(-10, 10):
+                y = eval(equation.replace('x', str(x)))            
+                canvas.point(x, -y)
+
+            canvas.line(
+                -10,
+                10,
+                -eval(equation.replace('x', '-10')),
+                -eval(equation.replace('x', '10'))
+            )
             
-            if iaxis == 'x':
-                draw_line(_start, num, start, curr)
+            if input("Would you like to graph another linear equation? (y/N) ") == 'y':
+                main(canvas)
+            else:
+                canvas.save()
 
-            if iaxis == 'y':
-                draw_line(start, curr, _start, num)
-
-
-# linear_equation('y', '(x + 8) / 2', -3, 3)
-# linear_equation('y', '-3 * x', -2, 2)
-
-out = Image.fromarray(canvas)
-out.save("./out.png")
+main()

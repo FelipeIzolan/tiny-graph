@@ -3,6 +3,8 @@
 ![image](https://github.com/user-attachments/assets/3baa782f-2d39-4df2-a78a-bf963172417c)
 
 ## 👨‍💻 Development
+- [x] Inequality
+- [ ] Linear Inequality
 - [x] Linear Equation
 - [ ] Quadratic Equation
 - [ ] Cubic Equation
