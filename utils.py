@@ -25,3 +25,6 @@ def format(expr: str, index: int):
             pos += 1
 
     return expr
+
+def get_slope(f: str):
+    return -eval(f.replace('x', '0')) + eval(f.replace('x', '1'))

@@ -4,9 +4,10 @@ import numpy as np
 
 class Canvas:
     RED = [255, 74, 121, 255]
+    GREEN = [43, 255, 128, 255]
     BLUE = [74, 168, 255, 255]
-    YELLOW = [255, 210, 140, 255]
     BLACK = [33, 33, 33, 255]
+    YELLOW = [255, 210, 140, 255]
 
     def __init__(self, base: Literal['graph', 'line']) -> None:
         self.__canvas = np.asarray(Image.open(f'./{base}.png')).copy()
@@ -32,34 +33,25 @@ class Canvas:
         if self.base == 'graph': return 112 + y * 10
         return y
 
-    def point(self, x: int, y: int, color = RED):
-        if not self.valid(x, y): return
-        x, y = self.offsetX(x), self.offsetY(y)
+    def point(self, x: int, y: int, raw = False, quad = False, one = False, color = RED):
+        if not raw and self.valid(x,y):
+            x, y = self.offsetX(x), self.offsetY(y)
 
         self.__canvas[y][x] = color
-        for n in range (-1, 2):
-            self.__canvas[y+n][x] = color
-            self.__canvas[y][x+n] = color
 
-    def pointq(self, x: int, y: int, color = RED): # point-quadrate
-        if not self.valid(x, y): return
-        x, y = self.offsetX(x), self.offsetY(y)
+        if one: 
+            return
 
-        self.__canvas[y][x] = color
-        for i in range (-1, 2):
-            for j in range(-1, 2):
-                self.__canvas[y+i][x+j] = color
-    
-    def pointr(self, x: int, y: int, color = RED): # point-raw
-        self.__canvas[y][x] = color
-        for n in range (-1, 2):
-            self.__canvas[y+n][x] = color
-            self.__canvas[y][x+n] = color
+        if quad:
+            for i in range (-1, 2):
+                for j in range(-1, 2):
+                    self.__canvas[y+i][x+j] = color
+        else:
+            for n in range (-1, 2):
+                self.__canvas[y+n][x] = color
+                self.__canvas[y][x+n] = color
 
-    def pointro(self, x: int, y: int, color = RED): # point-raw-one
-        self.__canvas[y][x] = color
-
-    def line(self, x1: int, x2: int, y1: int, y2: int, overlap = False, color = BLUE):
+    def line(self, x1: int, x2: int, y1: int, y2: int, dotted = False, overlap = False, color = BLUE):
         x1, x2 = self.offsetX(x1), self.offsetX(x2)
         y1, y2 = self.offsetY(y1), self.offsetY(y2)
         
@@ -79,14 +71,27 @@ class Canvas:
         x = x1
         y = y1
 
-        for _ in range(steps):
+        for i in range(steps):
             ix, iy = int(x), int(y)
 
-            if self.valid(ix, iy, False) and not all(self.__canvas[iy][ix]) or overlap:
+            if self.valid(ix, iy, False) and\
+               (not all(self.__canvas[iy][ix]) or overlap) and\
+               (not dotted or (dotted and i % 2 == 0)):
                 self.__canvas[iy][ix] = color
 
             x = x + xinc
             y = y + yinc
+
+    def arrow(self, x: int, y: int, dir: Literal['top-left', 'top-right', 'bottom-left', 'bottom-right'], color = RED):
+        x, y = self.offsetX(x), self.offsetY(y)
+        self.point(x, y, True, True, False, color)
+        self.point(x, y + (1 if dir.startswith('top') else -1), True, False, True, [0, 0, 0, 0])
+
+        if dir.startswith("top"):
+            self.point(x + (1 if dir.endswith('left') else -1), y, True, False, True, [0, 0, 0, 0])
+
+        if dir.startswith("bottom"):
+            self.point(x + (1 if dir.endswith('right') else -1), y, True, False, True, [0, 0, 0, 0])
 
     def save(self, path = './out.png'):
         if not path.endswith('.png'):
