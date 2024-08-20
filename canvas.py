@@ -34,8 +34,11 @@ class Canvas:
         return y
 
     def point(self, x: int, y: int, raw = False, quad = False, one = False, color = RED):
-        if not raw and self.valid(x,y):
-            x, y = self.offsetX(x), self.offsetY(y)
+        if not raw:
+            if self.valid(x,y):
+                x, y = self.offsetX(x), self.offsetY(y)
+            else:
+                return
 
         self.__canvas[y][x] = color
 
