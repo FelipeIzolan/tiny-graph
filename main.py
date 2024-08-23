@@ -27,14 +27,14 @@ def main(canvas = None):
         
             canvas = Canvas('line')
         
-            canvas.line(number, 11 if operator[0] == '>' else -11, 0, 0, False, True, Canvas.RED)
-            canvas.point(number, 0, False, True)
-            canvas.point(1 if operator[0] == '<' else 223, 2, True)
-            canvas.point(2 if operator[0] == '<' else 222, 0, True, False, True)
-            canvas.point(2 if operator[0] == '<' else 222, 4, True, False, True)
+            canvas.line(number, 11 if operator[0] == '>' else -11, 0, 0, False, True, canvas.GREEN)
+            canvas.point(number, 0, False, True, False, canvas.GREEN)
+            canvas.point(1 if operator[0] == '<' else 223, 2, True, False, False, canvas.GREEN)
+            canvas.point(2 if operator[0] == '<' else 222, 0, True, False, True, canvas.GREEN)
+            canvas.point(2 if operator[0] == '<' else 222, 4, True, False, True, canvas.GREEN)
 
             if len(operator) == 1:
-                canvas.point(canvas.offsetX(number), canvas.offsetY(), True, False, True, Canvas.BLACK)
+                canvas.point(canvas.offsetX(number), canvas.offsetY(), True, False, True, canvas.BLACK)
 
             canvas.save()
 
