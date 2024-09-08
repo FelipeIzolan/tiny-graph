@@ -9,7 +9,7 @@ print('''
               |_____|      |_____|          |__|
 ''')
 
-index = int(input(f'{PROMPT}'))
+index = int(input(PROMPT))
 if index < 1 or index > 3:
     raise Exception("Index out of range")
 
@@ -39,15 +39,15 @@ def main(canvas = None):
             canvas.save()
 
         case 2:
-            if (expr[1] != '<' and expr[1] != '>') or\
-                expr[0] != 'y':
+            if (expr[0] != 'y' and expr[0] != 'x') or\
+               (expr[1] != '<' and expr[1] != '>'):
                 raise Exception("\033[0;31mLinear Inequality - Invalid Expression.\033[0m")
 
             operator = expr[1] + ('=' if expr[2] == '=' else '')
             inequality = expr[1 + len(operator):]
             
             expr = 'y' + operator + ('=' if operator == '<' or operator == '>' else '') + inequality
-
+            
             result = eval(expr.replace('y', '0').replace('x', '0'))
             canvas = Canvas("graph")
 
@@ -78,22 +78,34 @@ def main(canvas = None):
             canvas.save()
 
         case 3:
-            if expr[0] != 'y' or expr[1] != '=':
+            if (expr[0] != 'y' and expr[0] != 'x') or expr[1] != '=':
                 raise Exception("\033[0;31mLinear Equation - Invalid Expression.\033[0m")
 
             canvas = canvas if canvas else Canvas('graph')
             equation = expr[2:]
+            
+            if expr[0] == 'y':
+                for x in range(-10, 11):
+                    y = eval(equation.replace('x', str(x)))            
+                    canvas.point(x, -y)
 
-            for x in range(-10, 10):
-                y = eval(equation.replace('x', str(x)))            
-                canvas.point(x, -y)
+                canvas.line(
+                    -10, 10,
+                    -eval(equation.replace('x', '-10')),
+                    -eval(equation.replace('x', '10'))
+                )
 
-            canvas.line(
-                -10, 10,
-                -eval(equation.replace('x', '-10')),
-                -eval(equation.replace('x', '10'))
-            )
+            if expr[0] == 'x':
+                for y in range(-10, 11):
+                    x = eval(equation.replace('y', str(y)))            
+                    canvas.point(x, -y)
 
+                canvas.line(
+                    eval(equation.replace('y', '-10')),
+                    eval(equation.replace('y', '10')),
+                    10, -10,
+                )
+                
             if input("Continue? (y/N) ") == 'y':
                 main(canvas)
             else:

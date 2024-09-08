@@ -4,7 +4,7 @@
 
 ## 👨‍💻 Development
 - [x] Inequality
-- [ ] Linear Inequality
+- [x] Linear Inequality
 - [x] Linear Equation
 - [ ] Quadratic Equation
 - [ ] Cubic Equation
