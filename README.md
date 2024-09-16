@@ -7,8 +7,9 @@
 - [x] Inequality
 - [x] Linear Inequality
 - [x] Linear Equation
-- [ ] Quadratic Equation
+- [X] Quadratic Equation
 - [ ] Cubic Equation
+- [ ] GUI
 
 ## 🚀 Input Examples
 

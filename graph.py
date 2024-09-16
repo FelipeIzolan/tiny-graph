@@ -1,10 +1,13 @@
 from canvas import Canvas
 from typing import Literal
+from numpy import arange
+from math import sqrt
 
 I2N = [
     'Inequality',
     'Linear Inequality',
-    'Linear Equation'
+    'Linear Equation',
+    'Quadratic Equation'
 ]
 
 
@@ -31,6 +34,22 @@ def format(exp: str, index: int):
     return exp
 
 
+def quadratic(a, b, c, x):
+    return a * x * x + b * x + c
+
+
+def quadratic_0(a, b, c):
+    delta = b * b - 4 * a * c
+
+    if delta <= 0:
+        return 0, 0
+
+    d = 2 * a
+    s = sqrt(delta)
+
+    return (-b + s) / d, (-b - s) / d
+
+
 def get_slope(exp: str, axis: Literal['x', 'y']):
     return -eval(exp.replace(axis, '0')) + eval(exp.replace(axis, '1'))
 
@@ -52,19 +71,28 @@ def is_equality_operator(ope):
 # -------------------------------------- #
 
 def entry_point(index, ccanvas=None):
-    exp = format(input(f'Enter the {I2N[index - 1]}: '), index)
     canvas = ccanvas or Canvas('graph' if index > 1 else 'line')
 
-    match index:
-        case 1:
-            inequality(exp, canvas)
-        case 2:
-            linear_inequality(exp, canvas)
-        case 3:
-            linear_equation(exp, canvas)
+    if index >= 1 and index <= 3:
+        exp = format(input(f'Enter the {I2N[index - 1]}: '), index)
+
+        match index:
+            case 1:
+                inequality(exp, canvas)
+            case 2:
+                linear_inequality(exp, canvas)
+            case 3:
+                linear_equation(exp, canvas)
+
+    if index == 4:
+        a = int(input('a: '))
+        b = int(input('b: '))
+        c = int(input('c: '))
+
+        quadratic_equation(a, b, c, canvas)
 
 
-def inequality(exp, canvas):
+def inequality(exp: str, canvas: Canvas):
     if not is_variable(exp[0]) or\
        not is_inequality_operator(exp[1]):
         err("Inequality")
@@ -74,18 +102,22 @@ def inequality(exp, canvas):
     dir = 1 if operator[0] == '>' else - 1
 
     canvas.line(number, 11 * dir, 0, 0, False, True, Canvas.GREEN)
-    canvas.point(number, 0, False, False, True, Canvas.GREEN)
-    canvas.point(1 if dir == -1 else 223, 2, False, True, False, Canvas.GREEN)
-    canvas.point(2 if dir == -1 else 222, 0, True, True, False, Canvas.GREEN)
-    canvas.point(2 if dir == -1 else 222, 4, True, True, False, Canvas.GREEN)
+    canvas.point(number, 0, False, True, False, True, Canvas.GREEN)
+
+    canvas.point(1 if dir == -1 else 223, 2, False,
+                 False, True, True, Canvas.GREEN)
+    canvas.point(2 if dir == -1 else 222, 0, True,
+                 False, True, True, Canvas.GREEN)
+    canvas.point(2 if dir == -1 else 222, 4, True,
+                 False, True, True, Canvas.GREEN)
 
     if operator == '>' or operator == '<':
-        canvas.point(number, 0, True, False, False, Canvas.BLACK)
+        canvas.point(number, 0, True, False, False, True)
 
     canvas.save()
 
 
-def linear_inequality(exp, canvas):
+def linear_inequality(exp: str, canvas: Canvas):
     if not is_variable(exp[0]) or\
        not is_inequality_operator(exp[1]):
         err("Linear Inequality")
@@ -124,7 +156,7 @@ def linear_inequality(exp, canvas):
     if exp[0] == 'x':
         x0 = eval(inequality.replace('y', '0'))
         slope = get_slope(inequality, 'y')
-        result = eval(exp.replace('y', '1').replace('x', '1'))
+        result = eval(exp.replace('y', '0').replace('x', '0'))
 
         canvas.line(
             eval(inequality.replace('y', '-10')),
@@ -155,7 +187,7 @@ def linear_inequality(exp, canvas):
         canvas.save()
 
 
-def linear_equation(exp, canvas):
+def linear_equation(exp: str, canvas: Canvas):
     if not is_variable(exp[0]) or\
        not is_equality_operator(exp[1]):
         err("Linear Equation")
@@ -188,3 +220,20 @@ def linear_equation(exp, canvas):
         entry_point(3, canvas)
     else:
         canvas.save()
+
+
+def quadratic_equation(a: int, b: int, c: int, canvas: Canvas):
+    for x in arange(-8, 8, 0.001):  # <- line
+        y = -quadratic(a, b, c, x)
+        canvas.point(x, y, True, False, False, False, canvas.BLUE)
+
+    x_sym = -b / (2 * a)
+    y_sym = -quadratic(a, b, c, x_sym)
+    canvas.point(x_sym, y_sym)
+
+    x1, x2 = quadratic_0(a, b, c)
+    if x1 and x2:
+        canvas.point(x1, 0)
+        canvas.point(x2, 0)
+
+    canvas.save()

@@ -4,7 +4,7 @@ PROMPT = f'''
 What do you want to draw?\n
 {''.join(f'{index + 1} - {element}\n' for index,
          element in enumerate(I2N))}
-Enter a number:'''
+Enter a number: '''
 
 print('''
  __   __                                           __    
@@ -15,7 +15,7 @@ print('''
 ''')
 
 index = int(input(PROMPT))
-if index < 1 or index > 3:
+if index < 1 or index > len(I2N):
     raise Exception("Index out of range")
 
 
