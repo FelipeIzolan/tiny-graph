@@ -40,7 +40,7 @@ class Canvas:
             return int(112 + y * 10)
         return y
 
-    def point(self, x: int, y: int, one=False, quad=False, raw=False, overlap=True, color=RED):
+    def point(self, x, y, one=False, quad=False, raw=False, overlap=True, color=RED):
         if not raw:
             x, y = self.offsetX(x), self.offsetY(y)
 
@@ -55,7 +55,7 @@ class Canvas:
                 self._draw(x, y+n, color, overlap)
                 self._draw(x+n, y, color, overlap)
 
-    def line(self, x1: int, x2: int, y1: int, y2: int, dotted=False, overlap=False, color=BLUE):
+    def line(self, x1, x2, y1, y2, dotted=False, overlap=False, color=BLUE):
         x1, x2 = self.offsetX(x1), self.offsetX(x2)
         y1, y2 = self.offsetY(y1), self.offsetY(y2)
 
