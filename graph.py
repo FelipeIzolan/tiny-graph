@@ -36,14 +36,14 @@ def linear_inequality(canvas: Canvas, expression: str):
     canvas.arrow(
         p0 - 1 if axis == 'x' else -1 if slope > 0 else 1,
         p0 - 1 if axis == 'y' else -1 if slope > 0 else 1,
-        'tl' if slope > 0 else 'tr',
+        'tl' if slope > 0 else 'tr' if axis == 'y' else 'br',
         top
     )
 
     canvas.arrow(
         p0 + 1 if axis == 'x' else 1 if slope > 0 else -1,
         p0 + 1 if axis == 'y' else 1 if slope > 0 else -1,
-        'bl' if slope > 0 else 'br',
+        'bl' if slope > 0 else 'br' if axis == 'y' else 'tr',
         bottom
     )
 

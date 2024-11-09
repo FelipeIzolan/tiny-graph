@@ -61,16 +61,24 @@ def get_slope(expression: str, axis: Literal['x', 'y']):
 
 
 def get_color(expression: str, slope):
+    axis = expression[0]
     result = eval(expression.replace('x', '1').replace('y', '1'))
 
     if slope > 0:
-        return Canvas.GREEN if not result else Canvas.RED, \
-            Canvas.GREEN if result else Canvas.RED
-    else:
-        return Canvas.GREEN if result else Canvas.RED, \
-            Canvas.GREEN if not result else Canvas.RED
+        if axis == 'x':
+            return Canvas.GREEN if result else Canvas.RED, \
+                Canvas.GREEN if not result else Canvas.RED
+        else:  # y
+            return Canvas.GREEN if not result else Canvas.RED, \
+                Canvas.GREEN if result else Canvas.RED
 
-# --- #
+    else:
+        if axis == 'x':
+            return Canvas.GREEN if not result else Canvas.RED, \
+                Canvas.GREEN if result else Canvas.RED
+        else:  # y
+            return Canvas.GREEN if result else Canvas.RED, \
+                Canvas.GREEN if not result else Canvas.RED
 
 
 def is_variable(char):
