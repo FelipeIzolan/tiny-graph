@@ -2,6 +2,7 @@ from math import sqrt
 from typing import Literal
 
 from canvas import Canvas
+import re
 
 
 def frange(start: float, stop: float, step: float):
@@ -60,25 +61,21 @@ def get_slope(expression: str, axis: Literal['x', 'y']):
     return _2 - _1
 
 
-def get_color(expression: str, slope):
-    axis = expression[0]
-    result = eval(expression.replace('x', '1').replace('y', '1'))
+def get_color(expression: str, axis, iaxis):
+    equation = re.sub(r'>=|<=|>|<', '=', expression)[2:]
+    a0 = eval(equation.replace(iaxis, '0'))
+    result = eval(expression.replace(axis, str(a0)).replace(iaxis, '0'))
 
-    if slope > 0:
-        if axis == 'x':
-            return Canvas.GREEN if result else Canvas.RED, \
-                Canvas.GREEN if not result else Canvas.RED
-        else:  # y
-            return Canvas.GREEN if not result else Canvas.RED, \
-                Canvas.GREEN if result else Canvas.RED
-
-    else:
-        if axis == 'x':
-            return Canvas.GREEN if not result else Canvas.RED, \
-                Canvas.GREEN if result else Canvas.RED
-        else:  # y
-            return Canvas.GREEN if result else Canvas.RED, \
-                Canvas.GREEN if not result else Canvas.RED
+    if axis == 'y':
+        return (
+            Canvas.GREEN if not result else Canvas.RED,
+            Canvas.GREEN if result else Canvas.RED
+        )
+    else:  # 'x'
+        return (
+            Canvas.GREEN if result else Canvas.RED,
+            Canvas.GREEN if not result else Canvas.RED
+        )
 
 
 def is_variable(char):
