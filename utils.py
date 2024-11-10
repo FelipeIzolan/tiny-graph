@@ -61,7 +61,7 @@ def get_slope(expression: str, axis: Literal['x', 'y']):
     return _2 - _1
 
 
-def get_color(expression: str, axis, iaxis):
+def get_color(expression: str, axis, iaxis, operator):
     equation = re.sub(r'>=|<=|>|<', '=', expression)[2:]
     a0 = eval(equation.replace(iaxis, '0'))
     result = eval(expression.replace(axis, str(a0)).replace(iaxis, '0'))
@@ -70,11 +70,17 @@ def get_color(expression: str, axis, iaxis):
         return (
             Canvas.GREEN if not result else Canvas.RED,
             Canvas.GREEN if result else Canvas.RED
+        ) if operator == '>' else (
+            Canvas.GREEN if result else Canvas.RED,
+            Canvas.GREEN if not result else Canvas.RED
         )
     else:  # 'x'
         return (
             Canvas.GREEN if result else Canvas.RED,
             Canvas.GREEN if not result else Canvas.RED
+        ) if operator == '>' else (
+            Canvas.GREEN if not result else Canvas.RED,
+            Canvas.GREEN if result else Canvas.RED
         )
 
 

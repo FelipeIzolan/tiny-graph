@@ -31,7 +31,7 @@ def linear_inequality(canvas: Canvas, expression: str):
     slope = get_slope(inequality, iaxis)
     p0 = eval(inequality.replace(iaxis, '0')) * (-1 if axis == 'y' else 1)
 
-    top, bottom = get_color(expression, axis, iaxis)
+    top, bottom = get_color(expression, axis, iaxis, operator[0])
 
     canvas.arrow(
         p0 - 1 if axis == 'x' else -1 if slope > 0 else 1,
