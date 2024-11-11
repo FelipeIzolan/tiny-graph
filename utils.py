@@ -20,11 +20,16 @@ def format2eval(expression: str):
     expression = expression.replace(' ', '')
     pos = 0
 
-    while pos <= len(expression) - 1:
+    while pos < len(expression) - 1:
         char = expression[pos]
         next = expression[pos + 1] if pos + 1 < len(expression) else ''
 
-        if char.isdigit() and (next == '(' or next == 'x' or next == 'y'):
+        layer = (
+            (char.isdigit() or is_variable(char) or char == ')') and
+            (is_variable(next) or next == '(')
+        )
+
+        if layer:
             expression = expression[:pos + 1] + '*' + expression[pos + 1:]
             pos += 1
 
@@ -64,7 +69,12 @@ def get_slope(expression: str, axis: Literal['x', 'y']):
 def get_color(expression: str, axis, iaxis, operator):
     equation = re.sub(r'>=|<=|>|<', '=', expression)[2:]
     a0 = eval(equation.replace(iaxis, '0'))
-    result = eval(expression.replace(axis, str(a0)).replace(iaxis, '0'))
+    result = eval(
+        expression
+        .replace('=', '')
+        .replace(axis, str(a0))
+        .replace(iaxis, '0')
+    )
 
     if axis == 'y':
         return (
@@ -89,4 +99,4 @@ def is_variable(char):
 
 
 def is_operator(operator):
-    return operator == '=' or operator[0] == '>' or operator[0] == '<'
+    return operator[0] in ('=', '>', '<')
